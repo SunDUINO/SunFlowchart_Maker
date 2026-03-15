@@ -1,7 +1,23 @@
-package ui
+/*
+ * ╔══════════════════════════════════════════════════════════════╗
+ * ║         SunFlowChart Maker  v1.2.0                        	  ║
+ * ║         Neon-dark flowchart editor — Go + Ebiten             ║
+ * ╠══════════════════════════════════════════════════════════════╣
+ * ║  Autor / Author:                                             ║
+ * ║    Andrzej "Sunriver" Gromczyński                            ║
+ * ║    Lothar TeaM                                               ║
+ * ╠══════════════════════════════════════════════════════════════╣
+ * ║  GitHub  : https://github.com/SunDUINO                       ║
+ * ║  Forum   : https://forum.lothar-team.pl/                     ║
+ * ║                                                              ║
+ * ║  Plik / File: icons.go                                       ║
+ * ║                                                              ║
+ * ║  Licencja / License: MIT                                     ║
+ * ║  Rok / Year: 2025-2026                                       ║
+ * ╚══════════════════════════════════════════════════════════════╝
+ */
 
-// icons.go — draws toolbar icons as pure geometry, no font required.
-// Each icon fits in a ~20x20 box centred at (cx, cy).
+package ui
 
 import (
 	"image/color"
