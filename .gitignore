@@ -1,0 +1,8 @@
+@"
+*.exe
+*.exe~
+bin/
+*.test
+*.out
+.vscode/launch.json
+"@ | Out-File -Encoding utf8 .gitignore
