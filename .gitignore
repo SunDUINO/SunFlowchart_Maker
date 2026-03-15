@@ -1,0 +1,13 @@
+@"
+*.exe
+*.exe~
+bin/
+*.test
+*.out
+sunflowchart
+flowchart.json
+*.png
+*.svg
+.vscode/launch.json
+"@ | Out-File -Encoding utf8 .gitignore
+```
