@@ -17,6 +17,25 @@
  * ╚══════════════════════════════════════════════════════════════╝
  */
 
+/*
+ * ╔══════════════════════════════════════════════════════════════╗
+ * ║         SunFlowChart Maker  v1.2.0                          ║
+ * ║         Neon-dark flowchart editor — Go + Ebiten            ║
+ * ╠══════════════════════════════════════════════════════════════╣
+ * ║  Autor / Author:                                            ║
+ * ║    Andrzej "Sunriver" Gromczyński                           ║
+ * ║    Lothar TeaM                                              ║
+ * ╠══════════════════════════════════════════════════════════════╣
+ * ║  GitHub  : https://github.com/SunDUINO                      ║
+ * ║  Forum   : https://forum.lothar-team.pl/                    ║
+ * ╠══════════════════════════════════════════════════════════════╣
+ * ║  Plik / File: ui.go                                        ║
+ * ║  Opis / Desc: Interfejs / User interface panels            ║
+ * ╠══════════════════════════════════════════════════════════════╣
+ * ║  Licencja / License: MIT                                    ║
+ * ║  Rok / Year: 2025-2026                                      ║
+ * ╚══════════════════════════════════════════════════════════════╝
+ */
 package ui
 
 import (
@@ -272,6 +291,10 @@ type PropPanel struct {
 	animBtns    []animBtn
 	styleBtns   []styleBtn
 	borderBtns  []borderBtn
+	// drag state
+	dragging  bool
+	dragOffX  float64
+	dragOffY  float64
 }
 
 type swatch struct{ x, y, w, h float64; col color.RGBA }
@@ -282,9 +305,18 @@ type borderBtn struct{ x, y, w, h float64; thick float32; label string }
 func NewPropPanel(screenW float64) *PropPanel {
 	px := screenW - PropW - 4
 	pp := &PropPanel{X: px, Y: 60, W: PropW, H: 580}
+	pp.rebuild()
+	return pp
+}
 
+// rebuild recalculates all element positions from current pp.X / pp.Y.
+// Call this after dragging the panel.
+func (pp *PropPanel) rebuild() {
+	px := pp.X
 	sw, sg := 24.0, 5.0
 	cols := 4
+
+	pp.colSwatches = pp.colSwatches[:0]
 	for i, c := range model.Palette {
 		pp.colSwatches = append(pp.colSwatches, swatch{
 			x: px + 10 + float64(i%cols)*(sw+sg),
@@ -292,6 +324,8 @@ func NewPropPanel(screenW float64) *PropPanel {
 			w: sw, h: sw, col: c,
 		})
 	}
+
+	pp.bgSwatches = pp.bgSwatches[:0]
 	for i, c := range model.BgPalette {
 		pp.bgSwatches = append(pp.bgSwatches, swatch{
 			x: px + 10 + float64(i%cols)*(sw+sg),
@@ -300,11 +334,15 @@ func NewPropPanel(screenW float64) *PropPanel {
 		})
 	}
 
-	anims := []struct{ a model.Anim; l string }{
+	anims := []struct {
+		a model.Anim
+		l string
+	}{
 		{model.AnimNone, "Off"}, {model.AnimGlow, "Glow"}, {model.AnimPulse, "Pulse"},
 		{model.AnimBlink, "Blink"}, {model.AnimFlash, "Flash"}, {model.AnimSpinner, "Spin"},
 	}
 	aw, ah, ag := 56.0, 24.0, 5.0
+	pp.animBtns = pp.animBtns[:0]
 	for i, a := range anims {
 		pp.animBtns = append(pp.animBtns, animBtn{
 			x: px + 10 + float64(i%3)*(aw+ag), y: pp.Y + 310 + float64(i/3)*(ah+ag),
@@ -312,8 +350,12 @@ func NewPropPanel(screenW float64) *PropPanel {
 		})
 	}
 
-	borders := []struct{ t float32; l string }{{1, "1px"}, {2, "2px"}, {3, "3px"}, {4, "4px"}}
+	borders := []struct {
+		t float32
+		l string
+	}{{1, "1px"}, {2, "2px"}, {3, "3px"}, {4, "4px"}}
 	bw, bh, bg2 := 42.0, 24.0, 5.0
+	pp.borderBtns = pp.borderBtns[:0]
 	for i, b := range borders {
 		pp.borderBtns = append(pp.borderBtns, borderBtn{
 			x: px + 10 + float64(i)*(bw+bg2), y: pp.Y + 385,
@@ -323,9 +365,8 @@ func NewPropPanel(screenW float64) *PropPanel {
 
 	pp.styleBtns = []styleBtn{
 		{x: px + 10, y: pp.Y + 430, w: 90, h: 24, style: model.EdgeCurve, label: "~ Krzywa"},
-		{x: px + 115, y: pp.Y + 430, w: 90, h: 24, style: model.EdgeElbow, label: "| Łamana"},
+		{x: px + 115, y: pp.Y + 430, w: 90, h: 24, style: model.EdgeElbow, label: "| Lamana"},
 	}
-	return pp
 }
 
 func (pp *PropPanel) Draw(dst *ebiten.Image, n *model.Node, t float64) {
@@ -334,7 +375,8 @@ func (pp *PropPanel) Draw(dst *ebiten.Image, n *model.Node, t float64) {
 	}
 	pp.drawBg(dst, pp.H)
 
-	render.DrawTextAt(dst, "Wlasciwosci wezla", pp.X+10, pp.Y+8, color.RGBA{100, 160, 255, 255})
+	// Drag title bar
+	pp.drawTitleBar(dst, "Wlasciwosci wezla")
 
 	render.DrawTextAt(dst, "Kolor:", pp.X+10, pp.Y+50, color.RGBA{80, 110, 180, 200})
 	vector.FillRect(dst, float32(pp.X+60), float32(pp.Y+44), 28, 16, n.Color, true)
@@ -367,7 +409,7 @@ func (pp *PropPanel) DrawEdgeProps(dst *ebiten.Image, e *model.Edge) {
 		return
 	}
 	pp.drawBg(dst, 260)
-	render.DrawTextAt(dst, "Wlasciwosci strzalki", pp.X+10, pp.Y+8, color.RGBA{100, 160, 255, 255})
+	pp.drawTitleBar(dst, "Wlasciwosci strzalki")
 
 	render.DrawTextAt(dst, "Kolor:", pp.X+10, pp.Y+30, color.RGBA{80, 110, 180, 200})
 	vector.FillRect(dst, float32(pp.X+60), float32(pp.Y+24), 28, 16, e.Color, true)
@@ -388,6 +430,47 @@ func (pp *PropPanel) drawBg(dst *ebiten.Image, h float64) {
 		color.RGBA{7, 10, 28, 242})
 	render.StrokeRoundRect(dst, float32(pp.X-6), float32(pp.Y-6), float32(pp.W+12), float32(h+12), 10, 1,
 		color.RGBA{35, 60, 140, 200})
+}
+
+// drawTitleBar draws the draggable title strip at the top of the panel.
+func (pp *PropPanel) drawTitleBar(dst *ebiten.Image, title string) {
+	// Highlighted bar — signals it's draggable
+	vector.FillRect(dst, float32(pp.X-6), float32(pp.Y-6), float32(pp.W+12), 24,
+		color.RGBA{20, 40, 100, 200}, false)
+	render.DrawTextAt(dst, ":: "+title, pp.X+6, pp.Y+2, color.RGBA{120, 170, 255, 255})
+	// Drag hint dots on right side
+	for i := 0; i < 3; i++ {
+		vector.FillCircle(dst,
+			float32(pp.X+pp.W-10), float32(pp.Y+4+float64(i)*5), 1.5,
+			color.RGBA{80, 120, 200, 180}, true)
+	}
+}
+
+// TitleBarHitTest returns true if (mx,my) is on the title bar.
+func (pp *PropPanel) TitleBarHitTest(mx, my float64) bool {
+	return pp.Visible && inRect(mx, my, pp.X-6, pp.Y-6, pp.W+12, 24)
+}
+
+// StartDrag begins dragging the panel from screen point (mx,my).
+func (pp *PropPanel) StartDrag(mx, my float64) {
+	pp.dragging = true
+	pp.dragOffX = mx - pp.X
+	pp.dragOffY = my - pp.Y
+}
+
+// UpdateDrag moves the panel to follow (mx,my).
+func (pp *PropPanel) UpdateDrag(mx, my float64) {
+	if !pp.dragging {
+		return
+	}
+	pp.X = mx - pp.dragOffX
+	pp.Y = my - pp.dragOffY
+	pp.rebuild()
+}
+
+// StopDrag ends dragging.
+func (pp *PropPanel) StopDrag() {
+	pp.dragging = false
 }
 
 func (pp *PropPanel) drawSwatches(dst *ebiten.Image, swatches []swatch, active color.RGBA) {

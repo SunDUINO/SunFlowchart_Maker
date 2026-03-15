@@ -16,6 +16,7 @@
  * ║  Rok / Year: 2025-2026                                       ║
  * ╚══════════════════════════════════════════════════════════════╝
  */
+
 package editor
 
 import (
@@ -64,6 +65,7 @@ type Game struct {
 	connectFrom *model.Node
 	hoverNode   *model.Node
 	hoverEdge   *model.Edge
+	propDragging bool // dragging the properties panel
 
 	editLegend bool   // editing legend text
 	legendBuf  string // temp buffer while editing
@@ -562,7 +564,14 @@ func (g *Game) onLeftDown(fmx, fmy, wx, wy float64) {
 		return
 	}
 
-	// Props panel
+	// Props panel title bar drag
+	if g.props != nil && g.props.Visible && g.props.TitleBarHitTest(fmx, fmy) {
+		g.props.StartDrag(fmx, fmy)
+		g.propDragging = true
+		return
+	}
+
+	// Props panel clicks
 	if g.props != nil && g.props.HitTest(fmx, fmy) {
 		if len(g.selected) == 1 {
 			n := g.selected[0]
@@ -671,6 +680,10 @@ func (g *Game) onLeftDown(fmx, fmy, wx, wy float64) {
 
 func (g *Game) onLeftUp(_, _ float64) {
 	g.panning = false
+	g.propDragging = false
+	if g.props != nil {
+		g.props.StopDrag()
+	}
 	if g.resizeNode != nil {
 		g.snapshot()
 		g.resizeNode = nil
@@ -687,6 +700,11 @@ func (g *Game) onLeftUp(_, _ float64) {
 
 func (g *Game) onLeftHeld(fmx, fmy, wx, wy float64) {
 	if g.dialog != nil && g.dialog.Visible {
+		return
+	}
+	// Props panel drag
+	if g.propDragging && g.props != nil {
+		g.props.UpdateDrag(fmx, fmy)
 		return
 	}
 	if g.panning {
