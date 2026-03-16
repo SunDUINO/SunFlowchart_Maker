@@ -5,7 +5,7 @@
 ![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat&logo=go)
 ![Ebiten](https://img.shields.io/badge/Ebiten-v2.9.9-orange?style=flat)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat)
-![Version](https://img.shields.io/badge/Version-1.2.0-blue?style=flat)
+![Version](https://img.shields.io/badge/Version-1.3.0-blue?style=flat)
 
 **Author:** Andrzej "Sunriver" Gromczyński / Lothar TeaM
 
