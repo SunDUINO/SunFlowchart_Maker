@@ -39,10 +39,18 @@ func bounds(d *model.Diagram) (minX, minY, maxX, maxY float64) {
 	minX, minY = math.MaxFloat64, math.MaxFloat64
 	maxX, maxY = -math.MaxFloat64, -math.MaxFloat64
 	for _, n := range d.Nodes {
-		if n.X < minX { minX = n.X }
-		if n.Y < minY { minY = n.Y }
-		if n.X+n.W > maxX { maxX = n.X + n.W }
-		if n.Y+n.H > maxY { maxY = n.Y + n.H }
+		if n.X < minX {
+			minX = n.X
+		}
+		if n.Y < minY {
+			minY = n.Y
+		}
+		if n.X+n.W > maxX {
+			maxX = n.X + n.W
+		}
+		if n.Y+n.H > maxY {
+			maxY = n.Y + n.H
+		}
 	}
 	return
 }
@@ -56,14 +64,21 @@ func ExportPNG(d *model.Diagram, filename string) (string, error) {
 	oy := minY - pad
 	w := int(maxX - minX + pad*2 + 1)
 	h := int(maxY - minY + pad*2 + 1)
-	if w < 1 { w = 1 }
-	if h < 1 { h = 1 }
+	if w < 1 {
+		w = 1
+	}
+	if h < 1 {
+		h = 1
+	}
 
 	canvas := ebiten.NewImage(w, h)
 	canvas.Fill(d.BgColor)
 	render.DrawGrid(canvas, 0, 0, d.BgColor, true)
 
-	for _, n := range d.Nodes { n.X -= ox; n.Y -= oy }
+	for _, n := range d.Nodes {
+		n.X -= ox
+		n.Y -= oy
+	}
 	offsets := d.EdgeOffsets()
 	for _, e := range d.Edges {
 		from := d.NodeByID(e.FromID)
@@ -77,7 +92,10 @@ func ExportPNG(d *model.Diagram, filename string) (string, error) {
 		cx, cy := n.Centre()
 		render.DrawNodeLabel(canvas, int(n.Shape), n.Label, n.Sub, cx, cy, n.TextColor)
 	}
-	for _, n := range d.Nodes { n.X += ox; n.Y += oy }
+	for _, n := range d.Nodes {
+		n.X += ox
+		n.Y += oy
+	}
 
 	rgba := image.NewRGBA(image.Rect(0, 0, w, h))
 	for py := 0; py < h; py++ {
@@ -87,9 +105,13 @@ func ExportPNG(d *model.Diagram, filename string) (string, error) {
 	}
 
 	f, err := os.Create(filename)
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 	defer f.Close()
-	if err := png.Encode(f, rgba); err != nil { return "", err }
+	if err := png.Encode(f, rgba); err != nil {
+		return "", err
+	}
 	return filename, nil
 }
 
@@ -123,7 +145,9 @@ func ExportSVG(d *model.Diagram, filename string) error {
 	svgH := (baseH + legendH) * svgScale
 
 	f, err := os.Create(filename)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	defer f.Close()
 
 	bg := d.BgColor
@@ -144,9 +168,13 @@ func ExportSVG(d *model.Diagram, filename string) error {
 	for _, e := range d.Edges {
 		from := d.NodeByID(e.FromID)
 		to := d.NodeByID(e.ToID)
-		if from == nil || to == nil { continue }
+		if from == nil || to == nil {
+			continue
+		}
 		col := e.Color
-		if col.A == 0 { col = color.RGBA{80, 160, 255, 190} }
+		if col.A == 0 {
+			col = color.RGBA{80, 160, 255, 190}
+		}
 
 		tcx, tcy := to.Centre()
 		fcx, fcy := from.Centre()
@@ -158,15 +186,21 @@ func ExportSVG(d *model.Diagram, filename string) error {
 		dx, dy := ex-sx, ey-sy
 		dist := math.Sqrt(dx*dx + dy*dy)
 		var px, py float64
-		if dist > 0 { px, py = -dy/dist, dx/dist }
+		if dist > 0 {
+			px, py = -dy/dist, dx/dist
+		}
 		cp := dist * 0.35
 		var c1x, c1y, c2x, c2y float64
 		if math.Abs(dx) > math.Abs(dy) {
-			c1x = sx + cp + px*lateralPx; c1y = sy + py*lateralPx
-			c2x = ex - cp + px*lateralPx; c2y = ey + py*lateralPx
+			c1x = sx + cp + px*lateralPx
+			c1y = sy + py*lateralPx
+			c2x = ex - cp + px*lateralPx
+			c2y = ey + py*lateralPx
 		} else {
-			c1x = sx + px*lateralPx; c1y = sy + cp + py*lateralPx
-			c2x = ex + px*lateralPx; c2y = ey - cp + py*lateralPx
+			c1x = sx + px*lateralPx
+			c1y = sy + cp + py*lateralPx
+			c2x = ex + px*lateralPx
+			c2y = ey - cp + py*lateralPx
 		}
 
 		fmt.Fprintf(f, `<path d="M%.1f,%.1f C%.1f,%.1f %.1f,%.1f %.1f,%.1f" fill="none" stroke="%s" stroke-width="1.6" marker-end="url(#arrow)"/>`,

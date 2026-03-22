@@ -61,7 +61,7 @@ func drawIconSelect(dst *ebiten.Image, cx, cy float64, col color.RGBA) {
 	p.LineTo(x+2, y+4)  // inner notch
 	p.LineTo(x+5, y+10) // right barb
 	p.LineTo(x+2, y+10)
-	p.LineTo(x-1, y+4)  // back to notch
+	p.LineTo(x-1, y+4) // back to notch
 	p.Close()
 	strokePath(dst, &p, 1.5, col)
 }

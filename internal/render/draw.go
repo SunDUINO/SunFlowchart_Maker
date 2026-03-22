@@ -256,7 +256,10 @@ func rrectPath(x, y, w, h, r float32) *vector.Path {
 func fillDiamond(dst *ebiten.Image, x, y, w, h float32, col color.RGBA) {
 	cx, cy := x+w/2, y+h/2
 	p := &vector.Path{}
-	p.MoveTo(cx, y); p.LineTo(x+w, cy); p.LineTo(cx, y+h); p.LineTo(x, cy)
+	p.MoveTo(cx, y)
+	p.LineTo(x+w, cy)
+	p.LineTo(cx, y+h)
+	p.LineTo(x, cy)
 	p.Close()
 	vector.FillPath(dst, p, &vector.FillOptions{}, drawOpts(col))
 }
@@ -264,21 +267,30 @@ func fillDiamond(dst *ebiten.Image, x, y, w, h float32, col color.RGBA) {
 func strokeDiamond(dst *ebiten.Image, x, y, w, h, lw float32, col color.RGBA) {
 	cx, cy := x+w/2, y+h/2
 	p := &vector.Path{}
-	p.MoveTo(cx, y); p.LineTo(x+w, cy); p.LineTo(cx, y+h); p.LineTo(x, cy)
+	p.MoveTo(cx, y)
+	p.LineTo(x+w, cy)
+	p.LineTo(cx, y+h)
+	p.LineTo(x, cy)
 	p.Close()
 	vector.StrokePath(dst, p, &vector.StrokeOptions{Width: lw, LineJoin: vector.LineJoinMiter}, drawOpts(col))
 }
 
 func fillPara(dst *ebiten.Image, x, y, w, h, skew float32, col color.RGBA) {
 	p := &vector.Path{}
-	p.MoveTo(x+skew, y); p.LineTo(x+w, y); p.LineTo(x+w-skew, y+h); p.LineTo(x, y+h)
+	p.MoveTo(x+skew, y)
+	p.LineTo(x+w, y)
+	p.LineTo(x+w-skew, y+h)
+	p.LineTo(x, y+h)
 	p.Close()
 	vector.FillPath(dst, p, &vector.FillOptions{}, drawOpts(col))
 }
 
 func strokePara(dst *ebiten.Image, x, y, w, h, skew, lw float32, col color.RGBA) {
 	p := &vector.Path{}
-	p.MoveTo(x+skew, y); p.LineTo(x+w, y); p.LineTo(x+w-skew, y+h); p.LineTo(x, y+h)
+	p.MoveTo(x+skew, y)
+	p.LineTo(x+w, y)
+	p.LineTo(x+w-skew, y+h)
+	p.LineTo(x, y+h)
 	p.Close()
 	vector.StrokePath(dst, p, &vector.StrokeOptions{Width: lw, LineJoin: vector.LineJoinMiter}, drawOpts(col))
 }

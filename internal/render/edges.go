@@ -19,7 +19,6 @@
 
 package render
 
-
 import (
 	"image/color"
 	"math"
@@ -172,7 +171,11 @@ func strokePolyline(dst *ebiten.Image, pts [][2]float64, lw float32, col color.R
 }
 
 func clampCol(v int) uint8 {
-	if v > 255 { return 255 }
-	if v < 0 { return 0 }
+	if v > 255 {
+		return 255
+	}
+	if v < 0 {
+		return 0
+	}
 	return uint8(v)
 }

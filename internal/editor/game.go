@@ -62,9 +62,9 @@ type Game struct {
 	panStartX, panStartY float64
 	panCamX, panCamY     float64
 
-	connectFrom *model.Node
-	hoverNode   *model.Node
-	hoverEdge   *model.Edge
+	connectFrom  *model.Node
+	hoverNode    *model.Node
+	hoverEdge    *model.Edge
 	propDragging bool // dragging the properties panel
 
 	editLegend bool   // editing legend text
@@ -86,6 +86,7 @@ type Game struct {
 	initDone  bool
 }
 
+// NewGame - główna funkcja porogramu
 func NewGame() *Game {
 	g := &Game{
 		diagram: model.NewDiagram(),
@@ -916,7 +917,7 @@ func (g *Game) legendHitTest(mx, my float64) bool {
 	// rough height estimate — enough to catch a click
 	h := 80.0
 	if g.diagram.Legend != "" {
-		lines := len([]rune(g.diagram.Legend)) / 40 + 2
+		lines := len([]rune(g.diagram.Legend))/40 + 2
 		h = float64(lines)*16 + 24
 	}
 	y := sh - ui.StatusbarH - h - 8
@@ -956,7 +957,7 @@ func (g *Game) addNode(wx, wy float64) *model.Node {
 		Label: "Node", Shape: shape,
 		Color: col, FillColor: model.DarkFill(col),
 		TextColor: color.RGBA{220, 230, 255, 255},
-		Anim: model.AnimNone, AnimSpeed: 0.8,
+		Anim:      model.AnimNone, AnimSpeed: 0.8,
 	}
 	g.diagram.AddNode(n)
 	g.clearSelection()

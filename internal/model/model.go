@@ -60,8 +60,8 @@ func (a Anim) String() string {
 type EdgeStyle int
 
 const (
-	EdgeCurve  EdgeStyle = iota // smooth bezier
-	EdgeElbow                   // orthogonal L-shape
+	EdgeCurve EdgeStyle = iota // smooth bezier
+	EdgeElbow                  // orthogonal L-shape
 )
 
 // ─── Node ────────────────────────────────────────────────────────────────────

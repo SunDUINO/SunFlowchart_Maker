@@ -29,10 +29,10 @@ import (
 // ─── Serialisable snapshot ───────────────────────────────────────────────────
 
 type snapNode struct {
-	ID, Shape, Anim         int
-	X, Y, W, H, AnimSpeed   float64
-	BorderW                 float32
-	Label, Sub              string
+	ID, Shape, Anim             int
+	X, Y, W, H, AnimSpeed       float64
+	BorderW                     float32
+	Label, Sub                  string
 	Color, FillColor, TextColor [4]uint8
 }
 
@@ -44,16 +44,16 @@ type snapEdge struct {
 }
 
 type snapshot struct {
-	Nodes  []snapNode
-	Edges  []snapEdge
-	Legend string
+	Nodes              []snapNode
+	Edges              []snapEdge
+	Legend             string
 	BgR, BgG, BgB, BgA uint8
 }
 
 func toSnap(d *model.Diagram) snapshot {
 	s := snapshot{
 		Legend: d.Legend,
-		BgR: d.BgColor.R, BgG: d.BgColor.G,
+		BgR:    d.BgColor.R, BgG: d.BgColor.G,
 		BgB: d.BgColor.B, BgA: d.BgColor.A,
 	}
 	for _, n := range d.Nodes {
@@ -61,7 +61,7 @@ func toSnap(d *model.Diagram) snapshot {
 			ID: n.ID, Shape: int(n.Shape), Anim: int(n.Anim),
 			X: n.X, Y: n.Y, W: n.W, H: n.H, AnimSpeed: n.AnimSpeed,
 			BorderW: n.BorderW,
-			Label: n.Label, Sub: n.Sub,
+			Label:   n.Label, Sub: n.Sub,
 			Color:     rgba(n.Color),
 			FillColor: rgba(n.FillColor),
 			TextColor: rgba(n.TextColor),
@@ -89,7 +89,7 @@ func applySnap(d *model.Diagram, s snapshot) {
 			ID: sn.ID, Shape: model.Shape(sn.Shape), Anim: model.Anim(sn.Anim),
 			X: sn.X, Y: sn.Y, W: sn.W, H: sn.H, AnimSpeed: sn.AnimSpeed,
 			BorderW: sn.BorderW,
-			Label: sn.Label, Sub: sn.Sub,
+			Label:   sn.Label, Sub: sn.Sub,
 			Color:     fromRGBA(sn.Color),
 			FillColor: fromRGBA(sn.FillColor),
 			TextColor: fromRGBA(sn.TextColor),
@@ -113,7 +113,7 @@ func applySnap(d *model.Diagram, s snapshot) {
 	setNextID(d, maxID+1)
 }
 
-func rgba(c color.RGBA) [4]uint8 { return [4]uint8{c.R, c.G, c.B, c.A} }
+func rgba(c color.RGBA) [4]uint8     { return [4]uint8{c.R, c.G, c.B, c.A} }
 func fromRGBA(a [4]uint8) color.RGBA { return color.RGBA{a[0], a[1], a[2], a[3]} }
 
 // setNextID patches the unexported nextID field by marshalling/unmarshalling

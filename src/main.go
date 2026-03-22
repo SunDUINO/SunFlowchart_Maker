@@ -25,7 +25,7 @@ import (
 	"github.com/user/flowchart/internal/editor"
 )
 
-var version ="1.3.0";
+var version = "1.3.0"
 
 func main() {
 	ebiten.SetWindowSize(1400, 860)

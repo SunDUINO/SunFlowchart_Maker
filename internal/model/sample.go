@@ -39,7 +39,7 @@ func LoadSample(d *Diagram) {
 		return n
 	}
 
-	lb  := color.RGBA{80, 180, 255, 255}  // light blue
+	lb := color.RGBA{80, 180, 255, 255}   // light blue
 	ind := color.RGBA{63, 84, 186, 255}   // indigo
 	red := color.RGBA{220, 50, 50, 255}   // red
 	grn := color.RGBA{50, 200, 80, 255}   // green
@@ -51,32 +51,32 @@ func LoadSample(d *Diagram) {
 	main := add(460, 20, 160, 52, "STAN GŁÓWNY", "BEZCZYNNOŚĆ", ShapeRounded, ind, AnimGlow)
 
 	// ── Linter branch ───────────────────────────────────────────────────────
-	lintQ   := add(60,  110, 110, 52, "Błędy\nLintera?", "",          ShapeDiamond, lb,  AnimNone)
-	lintErr := add(40,  210, 130, 48, "BŁĄD LINTER",    "Kolor: RED", ShapeRounded, red, AnimPulse)
-	fixQ    := add(52,  300, 106, 48, "Naprawiono?",    "",           ShapeDiamond, lb,  AnimNone)
+	lintQ := add(60, 110, 110, 52, "Błędy\nLintera?", "", ShapeDiamond, lb, AnimNone)
+	lintErr := add(40, 210, 130, 48, "BŁĄD LINTER", "Kolor: RED", ShapeRounded, red, AnimPulse)
+	fixQ := add(52, 300, 106, 48, "Naprawiono?", "", ShapeDiamond, lb, AnimNone)
 
 	// ── GUI branch ──────────────────────────────────────────────────────────
-	guiQ      := add(240, 110, 110, 52, "Które okno?", "",             ShapeDiamond, lb,  AnimNone)
-	creator   := add(195, 210, 128, 48, "KREATOR",     "Ciągłe",       ShapeRounded, wht, AnimGlow)
-	dashboard := add(340, 210, 128, 48, "DASHBOARD",   "Ciągłe",       ShapeRounded, grn, AnimGlow)
+	guiQ := add(240, 110, 110, 52, "Które okno?", "", ShapeDiamond, lb, AnimNone)
+	creator := add(195, 210, 128, 48, "KREATOR", "Ciągłe", ShapeRounded, wht, AnimGlow)
+	dashboard := add(340, 210, 128, 48, "DASHBOARD", "Ciągłe", ShapeRounded, grn, AnimGlow)
 
 	// ── Simple actions ───────────────────────────────────────────────────────
-	cmdQ    := add(490, 110, 110, 52, "Komenda?",     "",            ShapeDiamond, lb,  AnimNone)
-	fmtN    := add(440, 210, 128, 48, "FORMATOWANIE", "Flash",       ShapeRounded, ora, AnimFlash)
-	impN    := add(590, 210, 128, 48, "IMPORTOWANIE", "Spinner",     ShapeRounded, lb,  AnimSpinner)
+	cmdQ := add(490, 110, 110, 52, "Komenda?", "", ShapeDiamond, lb, AnimNone)
+	fmtN := add(440, 210, 128, 48, "FORMATOWANIE", "Flash", ShapeRounded, ora, AnimFlash)
+	impN := add(590, 210, 128, 48, "IMPORTOWANIE", "Spinner", ShapeRounded, lb, AnimSpinner)
 
 	// ── Long processes ───────────────────────────────────────────────────────
-	procQ  := add(760, 110, 110, 52, "Proces?",  "",        ShapeDiamond, lb,  AnimNone)
-	runN   := add(700, 210, 118, 48, "RUN",      "Pulse",   ShapeRounded, grn, AnimPulse)
-	buildN := add(832, 210, 118, 48, "BUILD",    "Blink",   ShapeRounded, blu, AnimBlink)
-	testN  := add(964, 210, 118, 48, "TEST",     "Pulse",   ShapeRounded, wht, AnimPulse)
+	procQ := add(760, 110, 110, 52, "Proces?", "", ShapeDiamond, lb, AnimNone)
+	runN := add(700, 210, 118, 48, "RUN", "Pulse", ShapeRounded, grn, AnimPulse)
+	buildN := add(832, 210, 118, 48, "BUILD", "Blink", ShapeRounded, blu, AnimBlink)
+	testN := add(964, 210, 118, 48, "TEST", "Pulse", ShapeRounded, wht, AnimPulse)
 
 	// ── Results ──────────────────────────────────────────────────────────────
-	runRes   := add(710, 310, 100, 46, "Wynik\nRUN?",   "", ShapeDiamond, lb, AnimNone)
+	runRes := add(710, 310, 100, 46, "Wynik\nRUN?", "", ShapeDiamond, lb, AnimNone)
 	buildRes := add(836, 310, 100, 46, "Wynik\nBUILD?", "", ShapeDiamond, lb, AnimNone)
-	testRes  := add(962, 310, 100, 46, "Wynik\nTEST?",  "", ShapeDiamond, lb, AnimNone)
+	testRes := add(962, 310, 100, 46, "Wynik\nTEST?", "", ShapeDiamond, lb, AnimNone)
 
-	okN   := add(740, 410, 120, 48, "WYNIK OK",   "", ShapeRounded, grn, AnimFlash)
+	okN := add(740, 410, 120, 48, "WYNIK OK", "", ShapeRounded, grn, AnimFlash)
 	failN := add(880, 410, 120, 48, "WYNIK BŁĄD", "", ShapeRounded, red, AnimFlash)
 
 	// ── Edges ─────────────────────────────────────────────────────────────────
@@ -88,20 +88,20 @@ func LoadSample(d *Diagram) {
 		})
 	}
 
-	conn(main, lintQ,  "Wykryto błędy")
-	conn(main, guiQ,   "Otwarcie okna")
-	conn(main, cmdQ,   "Akcja")
-	conn(main, procQ,  "Proces")
+	conn(main, lintQ, "Wykryto błędy")
+	conn(main, guiQ, "Otwarcie okna")
+	conn(main, cmdQ, "Akcja")
+	conn(main, procQ, "Proces")
 
 	conn(lintQ, lintErr, "TAK")
-	conn(lintQ, main,    "NIE")
-	conn(lintErr, fixQ,  "")
-	conn(fixQ, main,     "TAK")
-	conn(fixQ, lintErr,  "NIE")
+	conn(lintQ, main, "NIE")
+	conn(lintErr, fixQ, "")
+	conn(fixQ, main, "TAK")
+	conn(fixQ, lintErr, "NIE")
 
-	conn(guiQ, creator,   "Creator")
+	conn(guiQ, creator, "Creator")
 	conn(guiQ, dashboard, "Dashboard")
-	conn(creator,   main, "Zamknięcie")
+	conn(creator, main, "Zamknięcie")
 	conn(dashboard, main, "Zamknięcie")
 
 	conn(cmdQ, fmtN, "GoFMT")
@@ -109,21 +109,21 @@ func LoadSample(d *Diagram) {
 	conn(fmtN, main, "Koniec")
 	conn(impN, main, "Koniec")
 
-	conn(procQ, runN,   "RUN")
+	conn(procQ, runN, "RUN")
 	conn(procQ, buildN, "BUILD")
-	conn(procQ, testN,  "TEST")
+	conn(procQ, testN, "TEST")
 
-	conn(runN,   runRes,   "")
+	conn(runN, runRes, "")
 	conn(buildN, buildRes, "")
-	conn(testN,  testRes,  "")
+	conn(testN, testRes, "")
 
-	conn(runRes,   okN,   "OK")
-	conn(runRes,   failN, "FAIL")
-	conn(buildRes, okN,   "OK")
+	conn(runRes, okN, "OK")
+	conn(runRes, failN, "FAIL")
+	conn(buildRes, okN, "OK")
 	conn(buildRes, failN, "FAIL")
-	conn(testRes,  okN,   "OK")
-	conn(testRes,  failN, "FAIL")
+	conn(testRes, okN, "OK")
+	conn(testRes, failN, "FAIL")
 
-	conn(okN,   main, "")
+	conn(okN, main, "")
 	conn(failN, main, "")
 }

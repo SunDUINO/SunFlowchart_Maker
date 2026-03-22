@@ -27,13 +27,13 @@ import (
 )
 
 type jsonNode struct {
-	ID, Shape, Anim     int
+	ID, Shape, Anim    int
 	X, Y, W, H         float64
-	AnimSpeed, BorderW  float64
-	Label, Sub          string
-	CR, CG, CB, CA      uint8
-	FR, FG, FB, FA      uint8
-	TR, TG, TB, TA      uint8
+	AnimSpeed, BorderW float64
+	Label, Sub         string
+	CR, CG, CB, CA     uint8
+	FR, FG, FB, FA     uint8
+	TR, TG, TB, TA     uint8
 }
 
 type jsonEdge struct {
@@ -44,11 +44,11 @@ type jsonEdge struct {
 }
 
 type jsonDiagram struct {
-	Nodes               []jsonNode
-	Edges               []jsonEdge
-	NextID              int
+	Nodes              []jsonNode
+	Edges              []jsonEdge
+	NextID             int
 	BgR, BgG, BgB, BgA uint8
-	Legend              string
+	Legend             string
 }
 
 func marshalDiagram(d *model.Diagram) ([]byte, error) {
@@ -114,7 +114,7 @@ func unmarshalDiagram(d *model.Diagram, data []byte) error {
 }
 
 func writeFile(path string, data []byte) error { return os.WriteFile(path, data, 0644) }
-func readFile(path string) ([]byte, error)      { return os.ReadFile(path) }
+func readFile(path string) ([]byte, error)     { return os.ReadFile(path) }
 
 func loadDiagramFrom(d *model.Diagram, filename string) error {
 	data, err := readFile(filename)

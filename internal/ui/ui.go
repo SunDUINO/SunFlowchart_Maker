@@ -54,7 +54,7 @@ import (
 type Tool int
 
 const (
-	ToolSelect  Tool = iota
+	ToolSelect Tool = iota
 	ToolNode
 	ToolTitle
 	ToolConnect
@@ -235,7 +235,6 @@ func drawGridToggleBtn(dst *ebiten.Image, x, y, w, h float64, label string, acti
 	render.DrawTextCentered(dst, label, x+w/2, y+h/2+2, tc)
 }
 
-
 func (tb *Toolbar) Click(mx, my float64) bool {
 	if mx >= SidebarW {
 		return false
@@ -284,7 +283,7 @@ func (tb *Toolbar) ClickGridBtn(mx, my float64, screenH float64) (gridToggle, sn
 // ─── Properties panel ────────────────────────────────────────────────────────
 
 type PropPanel struct {
-	X, Y, W, H float64
+	X, Y, W, H  float64
 	Visible     bool
 	colSwatches []swatch
 	bgSwatches  []swatch
@@ -292,15 +291,30 @@ type PropPanel struct {
 	styleBtns   []styleBtn
 	borderBtns  []borderBtn
 	// drag state
-	dragging  bool
-	dragOffX  float64
-	dragOffY  float64
+	dragging bool
+	dragOffX float64
+	dragOffY float64
 }
 
-type swatch struct{ x, y, w, h float64; col color.RGBA }
-type animBtn struct{ x, y, w, h float64; anim model.Anim; label string }
-type styleBtn struct{ x, y, w, h float64; style model.EdgeStyle; label string }
-type borderBtn struct{ x, y, w, h float64; thick float32; label string }
+type swatch struct {
+	x, y, w, h float64
+	col        color.RGBA
+}
+type animBtn struct {
+	x, y, w, h float64
+	anim       model.Anim
+	label      string
+}
+type styleBtn struct {
+	x, y, w, h float64
+	style      model.EdgeStyle
+	label      string
+}
+type borderBtn struct {
+	x, y, w, h float64
+	thick      float32
+	label      string
+}
 
 func NewPropPanel(screenW float64) *PropPanel {
 	px := screenW - PropW - 4
