@@ -748,7 +748,6 @@ func DrawStatusBar(dst *ebiten.Image, tool Tool, nodeCount, edgeCount int, msg s
 }
 
 // ─── Text editor overlays ─────────────────────────────────────────────────────
-
 func DrawTextEditor(dst *ebiten.Image, n *model.Node, field int, buf string, camX, camY float64) {
 	if n == nil {
 		return
