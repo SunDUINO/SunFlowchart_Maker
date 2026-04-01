@@ -38,6 +38,7 @@ type Game struct {
 	toolbar *ui.Toolbar
 	props   *ui.PropPanel
 	dialog  *ui.SaveDialog
+	about   *ui.AboutDialog
 
 	camX, camY float64
 
@@ -103,6 +104,7 @@ func NewGame() *Game {
 	// Init panels at default size — they reposition on first Draw()
 	g.props = ui.NewPropPanel(1400)
 	g.dialog = ui.NewSaveDialog(1400, 860)
+	g.about = ui.NewAboutDialog(1400, 860)
 	return g
 }
 
@@ -116,6 +118,7 @@ func (g *Game) ensureInit() {
 	// Reposition panels to actual screen size
 	g.props = ui.NewPropPanel(float64(g.screenW))
 	g.dialog = ui.NewSaveDialog(float64(g.screenW), float64(g.screenH))
+	g.about = ui.NewAboutDialog(float64(g.screenW), float64(g.screenH))
 	g.initDone = true
 }
 
@@ -160,6 +163,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Reposition dialog if screen was resized
 	if g.dialog != nil && !g.dialog.Visible {
 		g.dialog.Reposition(float64(g.screenW), float64(g.screenH))
+		if g.about != nil {
+			g.about.Reposition(float64(g.screenW), float64(g.screenH))
+		}
 	}
 
 	tw := ui.SidebarW
@@ -249,6 +255,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	if g.dialog != nil {
 		g.dialog.Draw(screen)
 	}
+	if g.about != nil {
+		g.about.Draw(screen)
+	}
 
 	// Legend panel — pinned bottom-left
 	legendText := g.diagram.Legend
@@ -268,6 +277,14 @@ func (g *Game) handleKeyboard() {
 		g.handleDialogKeys()
 		return
 	}
+	// About dialog captures keyboard
+	if g.about != nil && g.about.Visible {
+		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) || inpututil.IsKeyJustPressed(ebiten.KeyF1) {
+			g.about.Visible = false
+		}
+		return
+	}
+
 	// Text editing takes full priority
 	if g.editLegend {
 		g.handleLegendInput()
@@ -322,6 +339,14 @@ func (g *Game) handleKeyboard() {
 	}
 	// Block other shortcuts when Ctrl held
 	if ctrlHeld {
+		return
+	}
+
+	// F1 = About
+	if inpututil.IsKeyJustPressed(ebiten.KeyF1) {
+		if g.about != nil {
+			g.about.Visible = !g.about.Visible
+		}
 		return
 	}
 
@@ -389,6 +414,10 @@ func (g *Game) handleKeyboard() {
 		g.deleteSelected()
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+		if g.about != nil && g.about.Visible {
+			g.about.Visible = false
+			return
+		}
 		g.clearSelection()
 		if g.connectFrom != nil {
 			g.connectFrom = nil
@@ -527,6 +556,14 @@ func (g *Game) onLeftDown(fmx, fmy, wx, wy float64) {
 			g.dialog.ExportSVG = false
 		} else if g.dialog.ClickSVG(fmx, fmy) {
 			g.dialog.ExportSVG = true
+		}
+		return
+	}
+
+	// About dialog intercepts all clicks when visible
+	if g.about != nil && g.about.Visible {
+		if g.about.ClickClose(fmx, fmy) || !g.about.HitTest(fmx, fmy) {
+			g.about.Visible = false
 		}
 		return
 	}
@@ -676,6 +713,10 @@ func (g *Game) onLeftDown(fmx, fmy, wx, wy float64) {
 		g.flash("Ekran wyczyszczony  (Ctrl+Z cofa)")
 	case ui.ToolLoad:
 		g.openLoadDialog()
+	case ui.ToolAbout:
+		if g.about != nil {
+			g.about.Visible = true
+		}
 	}
 }
 

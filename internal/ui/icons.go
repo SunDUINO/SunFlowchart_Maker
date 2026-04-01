@@ -46,6 +46,8 @@ func drawToolIcon(dst *ebiten.Image, t Tool, cx, cy float64, col color.RGBA) {
 		drawIconClear(dst, cx, cy, col)
 	case ToolLoad:
 		drawIconLoad(dst, cx, cy, col)
+	case ToolAbout:
+		drawIconAbout(dst, cx, cy, col)
 	}
 }
 
@@ -298,4 +300,32 @@ func drawIconLoad(dst *ebiten.Image, cx, cy float64, col color.RGBA) {
 	// Arrow pointing down into folder
 	vector.StrokeLine(dst, x+3, y-9, x+3, y+1, 1.5, col, true)
 	drawSmallArrow(dst, x+3, y-1, x+3, y+4, col)
+}
+
+// ── About: question mark ──────────────────────────────────────────────────────
+func drawIconAbout(dst *ebiten.Image, cx, cy float64, col color.RGBA) {
+	x, y := float32(cx), float32(cy)
+	// Circle outline
+	var p vector.Path
+	const steps = 24
+	for i := 0; i <= steps; i++ {
+		a := float64(i) / float64(steps) * 2 * math.Pi
+		px := x + 9*float32(math.Cos(a))
+		py := y + 9*float32(math.Sin(a))
+		if i == 0 {
+			p.MoveTo(px, py)
+		} else {
+			p.LineTo(px, py)
+		}
+	}
+	p.Close()
+	strokePath(dst, &p, 1.3, col)
+	// Question mark — curve top
+	var q vector.Path
+	q.MoveTo(x-3, y-3)
+	q.CubicTo(x-3, y-7, x+4, y-7, x+4, y-3)
+	q.CubicTo(x+4, y+1, x, y+1, x, y+3)
+	strokePath(dst, &q, 1.8, col)
+	// Dot below
+	vector.FillCircle(dst, x, y+6, 1.5, col, true)
 }

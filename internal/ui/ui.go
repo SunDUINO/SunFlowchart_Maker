@@ -62,6 +62,7 @@ const (
 	ToolDelete
 	ToolClear
 	ToolLoad
+	ToolAbout
 )
 
 const (
@@ -90,6 +91,7 @@ var toolMetas = []toolMeta{
 	{ToolDelete, "Usuń", "Usuń element  [X/Del]", color.RGBA{160, 30, 30, 255}},
 	{ToolClear, "Czysc", "Wyczysc ekran", color.RGBA{140, 80, 20, 255}},
 	{ToolLoad, "Wczytaj", "Wczytaj JSON  [Ctrl+O]", color.RGBA{20, 110, 100, 255}},
+	{ToolAbout, "?", "O programie  [F1]", color.RGBA{80, 80, 80, 255}},
 }
 
 type Toolbar struct {
@@ -737,7 +739,7 @@ func DrawStatusBar(dst *ebiten.Image, tool Tool, nodeCount, edgeCount int, msg s
 
 	toolNames := map[Tool]string{
 		ToolSelect: "Wybierz(V)", ToolNode: "Wezel(N)", ToolConnect: "Polacz(C)",
-		ToolPan: "Przesun(H)", ToolDelete: "Usun(X)", ToolClear: "Wyczysc", ToolLoad: "Wczytaj",
+		ToolPan: "Przesun(H)", ToolDelete: "Usun(X)", ToolClear: "Wyczysc", ToolLoad: "Wczytaj", ToolAbout: "About",
 	}
 	status := fmt.Sprintf("  %s  |  Wezly:%d  Krawedzie:%d  |  F5=zapis  F6=export  T=tytul  L=legenda  G=siatka  S+G=snap",
 		toolNames[tool], nodeCount, edgeCount)
@@ -791,4 +793,105 @@ func clampC(v int) uint8 {
 		return 0
 	}
 	return uint8(v)
+}
+
+// ─── About Dialog ─────────────────────────────────────────────────────────────
+
+type AboutDialog struct {
+	Visible bool
+	X, Y    float64
+	W, H    float64
+}
+
+func NewAboutDialog(screenW, screenH float64) *AboutDialog {
+	w, h := 420.0, 300.0
+	return &AboutDialog{
+		X: screenW/2 - w/2,
+		Y: screenH/2 - h/2,
+		W: w, H: h,
+	}
+}
+
+func (ad *AboutDialog) Reposition(screenW, screenH float64) {
+	ad.X = screenW/2 - ad.W/2
+	ad.Y = screenH/2 - ad.H/2
+}
+
+func (ad *AboutDialog) Draw(dst *ebiten.Image) {
+	if !ad.Visible {
+		return
+	}
+	// Dim overlay
+	vector.FillRect(dst, 0, 0,
+		float32(dst.Bounds().Dx()), float32(dst.Bounds().Dy()),
+		color.RGBA{0, 0, 0, 160}, false)
+
+	// Panel
+	render.FillRoundRect(dst, float32(ad.X), float32(ad.Y), float32(ad.W), float32(ad.H), 12,
+		color.RGBA{8, 11, 30, 252})
+	render.StrokeRoundRect(dst, float32(ad.X), float32(ad.Y), float32(ad.W), float32(ad.H), 12, 1.5,
+		color.RGBA{60, 120, 255, 220})
+
+	// Title bar
+	vector.FillRect(dst, float32(ad.X), float32(ad.Y), float32(ad.W), 32,
+		color.RGBA{20, 40, 110, 220}, false)
+	render.DrawTextCentered(dst, "O programie / About", ad.X+ad.W/2, ad.Y+16,
+		color.RGBA{140, 190, 255, 255})
+
+	// Logo / name
+	render.DrawTextCentered(dst, "SunFlowChart Maker  v1.2.0", ad.X+ad.W/2, ad.Y+58,
+		color.RGBA{255, 220, 80, 255})
+	render.DrawTextCentered(dst, "Neon-dark flowchart editor", ad.X+ad.W/2, ad.Y+74,
+		color.RGBA{120, 160, 220, 200})
+
+	// Separator
+	vector.FillRect(dst, float32(ad.X+16), float32(ad.Y+86), float32(ad.W-32), 1,
+		color.RGBA{40, 70, 160, 180}, false)
+
+	// Author info
+	lines := []struct{ text string; col color.RGBA }{
+		{"Autor / Author:", color.RGBA{80, 110, 180, 200}},
+		{"Andrzej SunRiver Gromczynski", color.RGBA{200, 220, 255, 240}},
+		{"Lothar TeaM", color.RGBA{160, 190, 240, 200}},
+		{"", color.RGBA{}},
+		{"GitHub:", color.RGBA{80, 110, 180, 200}},
+		{"github.com/SunDUINO", color.RGBA{100, 180, 255, 230}},
+		{"", color.RGBA{}},
+		{"Forum:", color.RGBA{80, 110, 180, 200}},
+		{"forum.lothar-team.pl", color.RGBA{100, 180, 255, 230}},
+	}
+	for i, l := range lines {
+		if l.text == "" {
+			continue
+		}
+		render.DrawTextAt(dst, l.text, ad.X+20, ad.Y+100+float64(i)*16, l.col)
+	}
+
+	// Separator before coffee
+	vector.FillRect(dst, float32(ad.X+16), float32(ad.Y+248), float32(ad.W-32), 1,
+		color.RGBA{40, 70, 160, 180}, false)
+
+	// Buy me a coffee
+	render.DrawTextCentered(dst, "Postaw mi kawe / Buy me a coffee:", ad.X+ad.W/2, ad.Y+261,
+		color.RGBA{80, 110, 180, 200})
+	render.DrawTextCentered(dst, "buymeacoffee.com/sunriver", ad.X+ad.W/2, ad.Y+275,
+		color.RGBA{255, 180, 60, 230})
+
+	// Close button
+	bx, by := ad.X+ad.W/2-40, ad.Y+ad.H-36
+	render.FillRoundRect(dst, float32(bx), float32(by), 80, 26, 6,
+		color.RGBA{30, 60, 150, 255})
+	render.StrokeRoundRect(dst, float32(bx), float32(by), 80, 26, 6, 1.2,
+		color.RGBA{80, 140, 255, 220})
+	render.DrawTextCentered(dst, "Zamknij [Esc/F1]", ad.X+ad.W/2, by+13,
+		color.RGBA{200, 220, 255, 255})
+}
+
+func (ad *AboutDialog) ClickClose(mx, my float64) bool {
+	bx, by := ad.X+ad.W/2-40, ad.Y+ad.H-36
+	return inRect(mx, my, bx, by, 80, 26)
+}
+
+func (ad *AboutDialog) HitTest(mx, my float64) bool {
+	return ad.Visible && inRect(mx, my, ad.X, ad.Y, ad.W, ad.H)
 }
