@@ -849,7 +849,10 @@ func (ad *AboutDialog) Draw(dst *ebiten.Image) {
 		color.RGBA{40, 70, 160, 180}, false)
 
 	// Author info
-	lines := []struct{ text string; col color.RGBA }{
+	lines := []struct {
+		text string
+		col  color.RGBA
+	}{
 		{"Autor / Author:", color.RGBA{80, 110, 180, 200}},
 		{"Andrzej SunRiver Gromczynski", color.RGBA{200, 220, 255, 240}},
 		{"Lothar TeaM", color.RGBA{160, 190, 240, 200}},

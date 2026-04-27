@@ -118,7 +118,8 @@ func ExportPNG(d *model.Diagram, filename string) (string, error) {
 
 // SVG scale factor — 2x makes it larger and clearer
 const svgScale = 2.0
-// SVG Exporter 
+
+// SVG Exporter
 func ExportSVG(d *model.Diagram, filename string) error {
 	if len(d.Nodes) == 0 {
 		return fmt.Errorf("diagram jest pusty")

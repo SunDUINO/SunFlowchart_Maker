@@ -1158,4 +1158,3 @@ func loadDiagram(d *model.Diagram) error {
 	}
 	return unmarshalDiagram(d, data)
 }
-
